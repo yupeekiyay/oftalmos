@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h2>Update the event information</h2>
+<a class="btn btn-success btn-sm" href="{% url 'user_events' %}">Back to my events</a>
+<div class="container">
+    <h1>Are you sure you want to delete this event from your list?</h1>
+    
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <br>
+            <button type="submit">Submit</button>
+        </form>
+    
+</div>
+
+{% endblock content %}

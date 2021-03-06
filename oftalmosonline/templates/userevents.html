@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block content %}
+
+<div class="container-fluid">
+    <div>
+        <a href="{% url 'user_events_create' %}" class="btn btn-success btn-sm"> Suggest new event</a>
+    </div>
+    <div>
+        <h2>My upcoming events </h2>
+    </div>
+    <table id="dtMaterialDesignExample" class="table table-striped" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th class="th-sm">Event</th>
+                <th class="th-sm">Category</th>
+                <th class="th-sm">Tags</th>
+                <th class="th-sm">Organizer</th>
+                <th class="th-sm">Start date</th>
+                <th class="th-sm">Status</th>
+                <th class="th-sm">Format</th>
+                <th class="th-sm">Language</th>
+                <th class="th-sm">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in event_list%}
+            <tr>
+                <td> <a href="{{ event.get_absolute_url }}"> {{ event.title}}</a></td>
+                <td>{{ event.category}}
+
+                </td>
+                <td> {% for tag in event.tags.all %}
+                    <span class="badge badge-pill badge-secondary">{{tag.tag}}</span>
+                    {% endfor %}
+                </td>
+                <td>{{ event.organizer}}</td>
+                <td>{{ event.event_date_start|date:"SHORT_DATE_FORMAT" }}</td>
+                <td>
+                    {% if event.global_visibility %}
+                    <i class="fas fa-globe"></i>
+                    {% else %}
+                    <i class="fas fa-low-vision"></i>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if event.event_format == "live" %}
+                    <i class="fas fa-users"></i><span class="badge badge-pill badge-default">
+                        {{event.event_format}}</span>
+                    {% elif event.event_format == "online" %}
+                    <i class="fas fa-wifi"></i><span class="badge badge-pill badge-primary">
+                        {{event.event_format}}</span>
+                    {% endif %}
+                </td>
+                <td>{{ event.main_language}}</td>
+                <td>
+                    <a href="{% url 'events:event-update' event.slug %}"><i class="fas fa-edit"></i></a>
+                    <a href="{% url 'events:event-delete' event.slug %}"><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        <h2>My past events </h2>
+    </div>
+    <table id="dtMaterialDesignExample" class="table table-striped" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th class="th-sm">Event</th>
+                <th class="th-sm">Category</th>
+                <th class="th-sm">Tags</th>
+                <th class="th-sm">Organizer</th>
+                <th class="th-sm">Start date</th>
+                <th class="th-sm">End date</th>
+                <th class="th-sm">Format</th>
+                <th class="th-sm">Language</th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in past_events%}
+            <tr>
+                <td> <a href="{{ event.get_absolute_url }}"> {{ event.title}}</a></td>
+                <td>{{ event.category}}
+
+                </td>
+                <td> {% for tag in event.tags.all %}
+                    <span class="badge badge-pill badge-secondary">{{tag.tag}}</span>
+                    {% endfor %}
+                </td>
+                <td>{{ event.organizer}}</td>
+                <td>{{ event.event_date_start|date:"SHORT_DATE_FORMAT" }}</td>
+                <td>{{ event.event_date_finish|date:"SHORT_DATE_FORMAT"}}</td>
+                <td>
+                    {% if event.event_format == "live" %}
+                    <i class="fas fa-users"></i><span class="badge badge-pill badge-default">
+                        {{event.event_format}}</span>
+                    {% elif event.event_format == "online" %}
+                    <i class="fas fa-wifi"></i><span class="badge badge-pill badge-primary">
+                        {{event.event_format}}</span>
+                    {% endif %}
+                </td>
+                <td>{{ event.main_language}}</td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- MDBootstrap Datatables  -->
+
+    {% endblock content %}

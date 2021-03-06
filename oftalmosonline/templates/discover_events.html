@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block content %}
+<!-- <a href="#" class="btn btn-success btn-sm float-left"> Suggest new event</a> -->
+{% if next_in_thirty %}
+<div class="container-fluid">
+    <h2>Next 7 days events</h2>
+    <!-- Grid row -->
+    <div class="row">
+        {% for next in next_in_thirty %}
+        <!-- Grid column -->
+        <div class="col-lg-4 col-md-12">
+
+            <!--Card-->
+            <div class="card">
+
+                <!--Card image-->
+                <div class="view">
+                    <img src="{% if next.cover %} {{ next.cover.url }} {% else %} {{'../static/images/template_image.png' }} {% endif %}"
+                        class="card-img-top" alt="photo">
+                    <a href="#">
+                        <div class="mask rgba-white-slight"></div>
+                    </a>
+                </div>
+
+                <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <h4 class="card-title">{{next.title}}</h4>
+                    <!--Text-->
+                    <p class="card-text">{{next.description|truncatechars:100}}</p>
+                    <a href="{{ next.get_absolute_url }}" class="btn btn-primary">View</a>
+                </div>
+
+            </div>
+            <!--/.Card-->
+
+        </div>
+        <!-- Grid column -->
+    </div>
+
+
+    {% endfor %}
+</div>
+{% endif %}
+<h2 style="margin-top: 1rem;">Future events</h2>
+
+<table id="dtMaterialDesignExample" class="table table-striped" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th class="th-sm">Event</th>
+            <th class="th-sm">Category</th>
+            <th class="th-sm">Tags</th>
+            <th class="th-sm">Organizer</th>
+            <th class="th-sm">Start date</th>
+            <th class="th-sm">End date</th>
+            <th class="th-sm">Format</th>
+            <th class="th-sm">Language</th>
+            <th class="th-sm">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in event_list%}
+        <tr>
+            <td> <a href="{{ event.get_absolute_url }}"> {{ event.title}}</a></td>
+            <td>{{ event.category}}
+
+            </td>
+            <td> {% for tag in event.tags.all %}
+                <span class="badge badge-pill badge-secondary">{{tag.tag}}</span>
+                {% endfor %}
+            </td>
+            <td>{{ event.organizer}}</td>
+            <td>{{ event.event_date_start|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{{ event.event_date_finish|date:"SHORT_DATE_FORMAT"}}</td>
+            <td>
+                {% if event.event_format == "live" %}
+                <i class="fas fa-users"></i><span class="badge badge-pill badge-default"> {{event.event_format}}</span>
+                {% elif event.event_format == "online" %}
+                <i class="fas fa-wifi"></i><span class="badge badge-pill badge-primary"> {{event.event_format}}</span>
+                {% endif %}
+            </td>
+            <td>{{ event.main_language}}</td>
+            <td>
+                <button class="likebutton" id="add{{event.id}}" href="#" data-catid="{{ event.id }}">
+                    Add to calendar
+                </button>
+
+
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div>
+    <h2>Past events </h2>
+</div>
+<table id="dtMaterialDesignExample" class="table table-striped" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th class="th-sm">Event</th>
+            <th class="th-sm">Category</th>
+            <th class="th-sm">Tags</th>
+            <th class="th-sm">Organizer</th>
+            <th class="th-sm">Start date</th>
+            <th class="th-sm">End date</th>
+            <th class="th-sm">Format</th>
+            <th class="th-sm">Language</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for event in past_events%}
+        <tr>
+            <td> <a href="{{ event.get_absolute_url }}"> {{ event.title}}</a></td>
+            <td>{{ event.category}}
+
+            </td>
+            <td> {% for tag in event.tags.all %}
+                <span class="badge badge-pill badge-secondary">{{tag.tag}}</span>
+                {% endfor %}
+            </td>
+            <td>{{ event.organizer}}</td>
+            <td>{{ event.event_date_start|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{{ event.event_date_finish|date:"SHORT_DATE_FORMAT"}}</td>
+            <td>
+                {% if event.event_format == "live" %}
+                <i class="fas fa-users"></i><span class="badge badge-pill badge-default">{{ event.event_format }}</span>
+                {% else %}
+                <i class="fas fa-users"></i><span class="badge badge-pill badge-primary">{{ event.event_format }}</span>
+                {% endif %}
+            </td>
+            <td>{{ event.main_language}}</td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% csrf_token %}
+
+
+{% endblock content %}
+{% block inline_javascript %}
+<script type="text/javascript">
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    $('.likebutton').click(function () {
+        var catid;
+        catid = $(this).attr("data-catid");
+        $.ajax(
+            {
+                headers: {'X-CSRFToken': csrftoken},
+                type: "POST",
+                url: "{% url 'discover_events' %}",
+                data: {
+                    post_id: catid
+                },
+                success: function (data) {
+                    $('#like' + catid).remove();
+                    $('#message').text(data);
+                }
+            })
+    });
+
+</script>
+{% endblock inline_javascript %}

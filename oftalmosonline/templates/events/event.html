@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Event
+{% endblock title %}
+{% block content %}
+<div class="container my-5 py-5 z-depth-1">
+
+
+    <!--Section: Content-->
+    <section class="text-center">
+
+        <!-- Section heading -->
+        <h3 class="font-weight-bold mb-5">Event Details</h3>
+
+        <div class="row">
+
+            <div class="col-lg-6">
+                <img src="{% if event.cover %}{{ event.cover.url }}{% else %}{% static 'images/template_image.png' %}{% endif %}" class="img-fluid">
+                <!--Carousel Wrapper-->
+
+                <!--/.Carousel Wrapper-->
+
+            </div>
+
+            <div class="col-lg-5 text-center text-md-left">
+
+                <h2
+                    class="h2-responsive text-center text-md-left product-name font-weight-bold dark-grey-text mb-1 ml-xl-0 ml-4">
+                    <strong>{{event.title}}</strong>
+                </h2>
+                {% for tag in event.tags.all %}
+                <span class="badge badge-danger product mb-4 ml-xl-0 ml-4">{{tag.tag}}</span>
+                {% endfor %}
+                <h3 class="h3-responsive text-center text-md-left mb-5 ml-xl-0 ml-4">
+                    <span class="red-text font-weight-bold">
+                        <strong>{{event.event_format}}</strong>
+                    </span>
+
+                </h3>
+
+                <!--Accordion wrapper-->
+                <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true">
+
+                    <!-- Accordion card -->
+                    <div class="card">
+
+                        <!-- Card header -->
+                        <div class="card-header" role="tab" id="headingOne1">
+                            <a data-toggle="collapse" data-parent="#accordionEx" href="#collapseOne1"
+                                aria-expanded="true" aria-controls="collapseOne1">
+                                <h5 class="mb-0">
+                                    Description
+                                    <i class="fas fa-angle-down rotate-icon"></i>
+                                </h5>
+                            </a>
+                        </div>
+
+                        <!-- Card body -->
+                        <div id="collapseOne1" class="collapse show" role="tabpanel" aria-labelledby="headingOne1"
+                            data-parent="#accordionEx">
+                            <div class="card-body">
+                                {{ event.description }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Accordion card -->
+
+                    <!-- Accordion card -->
+                    <div class="card">
+
+                        <!-- Card header -->
+                        <div class="card-header" role="tab" id="headingTwo2">
+                            <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx" href="#collapseTwo2"
+                                aria-expanded="false" aria-controls="collapseTwo2">
+                                <h5 class="mb-0">
+                                    Details
+                                    <i class="fas fa-angle-down rotate-icon"></i>
+                                </h5>
+                            </a>
+                        </div>
+
+                        <!-- Card body -->
+                        <div id="collapseTwo2" class="collapse" role="tabpanel" aria-labelledby="headingTwo2"
+                            data-parent="#accordionEx">
+                            <div class="card-body">
+                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                                squid.
+                                3 wolf moon officia aute,
+                                non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.
+                                Brunch 3 wolf
+                                moon
+                                tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda
+                                shoreditch et.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Accordion card -->
+
+                    <!-- Accordion card -->
+                    <div class="card">
+
+                        <!-- Card header -->
+                        <div class="card-header" role="tab" id="headingThree3">
+                            <a class="collapsed" data-toggle="collapse" data-parent="#accordionEx"
+                                href="#collapseThree3" aria-expanded="false" aria-controls="collapseThree3">
+                                <h5 class="mb-0">
+                                    Faculty
+                                    <i class="fas fa-angle-down rotate-icon"></i>
+                                </h5>
+                            </a>
+                        </div>
+
+                        <!-- Card body -->
+                        <div id="collapseThree3" class="collapse" role="tabpanel" aria-labelledby="headingThree3"
+                            data-parent="#accordionEx">
+                            <div class="card-body">
+                                {% for faculty in event.faculty.all %}
+                                {{faculty.prefix}} {{faculty.first_name }} {{faculty.last_name}}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Accordion card -->
+
+                </div>
+                <!--/.Accordion wrapper-->
+
+                <!-- Add to Cart -->
+                <section class="color">
+                    <div class="mt-5">
+
+
+                        <div class="row mt-3">
+                            <div class="col-md-12 text-center text-md-left text-md-right">
+                                <button class="btn btn-primary btn-rounded">
+                                    <i class="fas fa-cart-plus mr-2" aria-hidden="true"></i> Add to calendar</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- /.Add to Cart -->
+
+            </div>
+
+        </div>
+
+    </section>
+    <!--Section: Content-->
+
+
+</div>
+
+{% endblock content %}
