@@ -5,11 +5,12 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
-from oftalmosonline.events.views import EventListView, UserEventListView, EventCreateView,LandingPageView
+from oftalmosonline.events.views import EventListView, UserEventListView, EventCreateView,LandingPageView,AddEventView
 
 urlpatterns = [
     path("", LandingPageView.as_view(), name="home"),
     path('discoverevents/', EventListView.as_view(), name='discover_events' ),
+    path('like-unlike_event',AddEventView.as_view(),name='like-unlike-event'),
     path('e/', include('oftalmosonline.events.urls', namespace='events')),
     path('myevents/', UserEventListView.as_view(), name='user_events'),
     path('myevents/create/', EventCreateView.as_view(), name='user_events_create'),
