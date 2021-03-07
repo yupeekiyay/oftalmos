@@ -130,13 +130,21 @@ Event
                 <section class="color">
                     <div class="mt-5">
 
-
+                        {% if has_access %}
+                        <div class="row mt-3">
+                            <div class="col-md-12 text-center text-md-left text-md-right">
+                                <button class="btn btn-primary btn-rounded">
+                                    <i class="fas fa-cart-plus mr-2" aria-hidden="true"></i> Remove from calendar</button>
+                            </div>
+                        </div>
+                        {% else %}
                         <div class="row mt-3">
                             <div class="col-md-12 text-center text-md-left text-md-right">
                                 <button class="btn btn-primary btn-rounded">
                                     <i class="fas fa-cart-plus mr-2" aria-hidden="true"></i> Add to calendar</button>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </section>
                 <!-- /.Add to Cart -->

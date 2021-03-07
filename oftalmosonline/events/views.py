@@ -84,18 +84,19 @@ class EventDetailView(generic.DetailView):
     queryset = Event.objects.all()
     context_object_name = "event"
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(EventDetailView, self).get_context_data(**kwargs)
-    #     product = self.get_object()
-    #     has_access = False
-    #     if self.request.user.is_authenticated:
-    #         if product in self.request.user.userlibrary.products.all():
-    #             has_access = True
-    #     context.update({
-    #         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-    #         "has_access": has_access
-    #     })
-    #     return context
+
+    def get_context_data(self, **kwargs):
+        context = super(EventDetailView, self).get_context_data(**kwargs)
+        event = self.get_object()
+        has_access = False
+        if self.request.user.is_authenticated:
+            if event in self.request.user.usercalendar.events.all():
+                has_access = True
+        context.update({
+
+            "has_access": has_access
+        })
+        return context
 
 class UserEventListView(LoginRequiredMixin,  generic.ListView):
     template_name = "userevents.html"
@@ -110,12 +111,13 @@ class UserEventListView(LoginRequiredMixin,  generic.ListView):
     
     def get_context_data(self, **kwargs):
         user = self.request.user
-        print(user)
+
         context = super(UserEventListView, self).get_context_data(**kwargs)
         
         past_events=UserCalendar.objects.filter(user=user, events__event_date_finish__lt=datetime.date.today())
         context.update({
                   "past_events":past_events, 
+                  
          })
        
         return context

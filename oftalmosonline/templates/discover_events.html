@@ -97,7 +97,7 @@
             </td>
             <td>{{ event.main_language}}</td>
             <td>
-                <button class="likebutton" id="add{{event.id}}" href="#" data-catid="{{ event.id }}">
+                <button class="btn btn-primary btn-sm likebutton" id="add{{event.id}}" href="#" data-catid="{{ event.id }}">
                     Add to calendar
                 </button>
 
@@ -110,7 +110,7 @@
 <div>
     <h2>Past events </h2>
 </div>
-<table id="dtMaterialDesignExample" class="table table-striped" cellspacing="0" width="100%">
+<table id="dtMaterialDesignExample1" class="table table-striped" cellspacing="0" width="100%">
     <thead>
         <tr>
             <th class="th-sm">Event</th>
@@ -153,9 +153,9 @@
 </table>
 {% csrf_token %}
 
-
 {% endblock content %}
 {% block inline_javascript %}
+
 <script type="text/javascript">
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -178,4 +178,26 @@
     });
 
 </script>
+<script>
+    
+    $(document).ready(function () {
+      $('#dtMaterialDesignExample').DataTable();
+      $('#dtMaterialDesignExample_wrapper').find('label').each(function () {
+        $(this).parent().append($(this).children());
+      });
+      $('#dtMaterialDesignExample_wrapper .dataTables_filter').find('input').each(function () {
+        const $this = $(this);
+        $this.attr("placeholder", "Search");
+        $this.removeClass('form-control-sm');
+      });
+      $('#dtMaterialDesignExample_wrapper .dataTables_length').addClass('d-flex flex-row');
+      $('#dtMaterialDesignExample_wrapper .dataTables_filter').addClass('md-form');
+      $('#dtMaterialDesignExample_wrapper select').removeClass(
+        'custom-select custom-select-sm form-control form-control-sm');
+      $('#dtMaterialDesignExample_wrapper select').addClass('mdb-select');
+      $('#dtMaterialDesignExample_wrapper .mdb-select').materialSelect();
+      $('#dtMaterialDesignExample_wrapper .dataTables_filter').find('label').remove();
+    });
+
+  </script>
 {% endblock inline_javascript %}
