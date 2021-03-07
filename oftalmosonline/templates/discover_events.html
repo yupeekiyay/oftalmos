@@ -71,8 +71,8 @@
                 {% endfor %}
             </td>
             <td>{{ event.organizer}}</td>
-            <td>{{ event.event_date_start|date:"SHORT_DATE_FORMAT" }}</td>
-            <td>{{ event.event_date_finish|date:"SHORT_DATE_FORMAT"}}</td>
+            <td>{{ event.event_date_start|date:"d M Y" }}</td>
+            <td>{{ event.event_date_finish|date:"d M Y" }}</td>
             <td>
                 {% if event.event_format == "live" %}
                 <i class="fas fa-users"></i><span class="badge badge-pill badge-default"> {{event.event_format}}</span>
@@ -121,8 +121,8 @@
                 {% endfor %}
             </td>
             <td>{{ event.organizer}}</td>
-            <td>{{ event.event_date_start|date:"SHORT_DATE_FORMAT" }}</td>
-            <td>{{ event.event_date_finish|date:"SHORT_DATE_FORMAT"}}</td>
+            <td>{{ event.event_date_start|date:"d M Y" }}</td>
+            <td>{{ event.event_date_finish|date:"d M Y"}}</td>
             <td>
                 {% if event.event_format == "live" %}
                 <i class="fas fa-users"></i><span class="badge badge-pill badge-default">{{ event.event_format }}</span>

@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 User = get_user_model()
 
 class LandingPageView(generic.TemplateView):
-    template_name = '../templates/userevents.html'
+    template_name = '../templates/pages/home.html'
 
     def dispatch(self,request,*args, **kwargs):
         if request.user.is_authenticated:
@@ -32,7 +32,7 @@ class EventListView(generic.ListView):
         context = super(EventListView, self).get_context_data(**kwargs)
         thirty_days_ago=datetime.date.today()+datetime.timedelta(days=7)
         next_in_thirty=Event.objects.filter(user=user, event_date_start__gt=datetime.date.today(),event_date_start__lt=thirty_days_ago)
-        past_events=Event.objects.filter(user=user, event_date_finish__lt=datetime.date.today())
+        past_events=Event.objects.filter(event_date_finish__lt=datetime.date.today())
         recently_added = Event.objects.filter(created=datetime.date.today()).count()
         context.update({
                   "next_in_thirty":next_in_thirty, 
