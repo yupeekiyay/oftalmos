@@ -8,46 +8,31 @@
     <!-- Grid row -->
     <div class="row">
         {% for next in next_in_thirty %}
+        <!-- Grid column -->
+        <div class="col-lg-4 col-md-12">
 
-        <div class="row">
+            <!--Card-->
+            <div class="card">
 
-            <!-- New Products -->
-            <div class="col-lg-4 col-md-12">
-      
-              <h4 class="text-center font-weight-bold dark-grey-text mb-5">
-                <strong>Upcoming events</strong>
-              </h4>
-      
-              <!-- Card -->
-              <div class="card hoverable mb-4">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-6 px-0">
-                      <a href="{{ next.get_absolute_url }}">
-                        <img src="{% if next.cover %} {{ next.cover.url }} {% else %} {{'../static/images/template_image.png' }} {% endif %}"
-                          class="img-fluid">
-                      </a>
-                    </div>
-                    <div class="col-6">
-                      <a>
-                        <strong>{{next.title}}</strong>
-                      </a>
-                      
-                      <h6 class="h6-responsive font-weight-bold dark-grey-text">
-                        <strong>{% if next.event_format == "live" %}
-                            <i class="fas fa-users"></i><span class="badge badge-pill badge-default"> {{next.event_format}}</span>
-                            {% elif next.event_format == "online" %}
-                            <i class="fas fa-wifi"></i><span class="badge badge-pill badge-primary"> {{next.event_format}}</span>
-                            {% endif %}</strong>
-                      </h6>
-                    </div>
-                  </div>
+                <!--Card image-->
+                <div class="view">
+                    <img src="{% if next.cover %} {{ next.cover.url }} {% else %} {{'../static/images/template_image.png' }} {% endif %}"
+                        class="card-img-top" alt="photo">
+                    <a href="#">
+                        <div class="mask rgba-white-slight"></div>
+                    </a>
                 </div>
-              </div>
-              <!-- Card -->
 
+                <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <h4 class="card-title">{{next.title}}</h4>
+                    <!--Text-->
+                    <p class="card-text">{{next.description|truncatechars:100}}</p>
+                    <a href="{{ next.get_absolute_url }}" class="btn btn-primary">View</a>
+                </div>
 
-        
+            </div>
             <!--/.Card-->
 
         </div>
@@ -75,6 +60,8 @@
         </tr>
     </thead>
     <tbody>
+        {% with userevents=user.usercalendar.events.all %}
+    
         {% for event in event_list%}
         <tr>
             <td> <a href="{{ event.get_absolute_url }}"> {{ event.title}}</a></td>
@@ -86,8 +73,8 @@
                 {% endfor %}
             </td>
             <td>{{ event.organizer}}</td>
-            <td>{{ event.event_date_start|date:"d M Y" }}</td>
-            <td>{{ event.event_date_finish|date:"d M Y" }}</td>
+            <td>{{ event.event_date_start|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{{ event.event_date_finish|date:"SHORT_DATE_FORMAT"}}</td>
             <td>
                 {% if event.event_format == "live" %}
                 <i class="fas fa-users"></i><span class="badge badge-pill badge-default"> {{event.event_format}}</span>
@@ -101,10 +88,10 @@
                     Add to calendar
                 </button>
 
-
             </td>
         </tr>
         {% endfor %}
+        {% endwith %}
     </tbody>
 </table>
 <div>
@@ -136,8 +123,8 @@
                 {% endfor %}
             </td>
             <td>{{ event.organizer}}</td>
-            <td>{{ event.event_date_start|date:"d M Y" }}</td>
-            <td>{{ event.event_date_finish|date:"d M Y"}}</td>
+            <td>{{ event.event_date_start|date:"SHORT_DATE_FORMAT" }}</td>
+            <td>{{ event.event_date_finish|date:"SHORT_DATE_FORMAT"}}</td>
             <td>
                 {% if event.event_format == "live" %}
                 <i class="fas fa-users"></i><span class="badge badge-pill badge-default">{{ event.event_format }}</span>
@@ -151,12 +138,112 @@
         {% endfor %}
     </tbody>
 </table>
+
 {% csrf_token %}
 
 {% endblock content %}
 {% block inline_javascript %}
+<script>
 
-<script type="text/javascript">
+    $(document).ready(function() {
+        $('.likebutton').click( function () {
+            var button=$(this)
+            var text = $(this).text();
+            var event_id=$(this).val()
+            var event_action=$(this).attr('data-action')
+            //console.log(text,event_id,event_action)
+            //const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+           // console.log(csrftoken)
+
+            $.ajax({
+
+                url: "{% url 'like-unlike-event' %}",
+                type: 'POST',
+    
+                dataType: 'json',
+                data: {'action': event_action,'event_id': event_id}, //here data must be strings
+                success: function (response) {
+                   // console.log('success')
+                   // console.log(response.Newaction)
+
+                    button.attr('data-action',response.Newaction)
+                    if (response.Newaction == 'like'){
+                       button.text('Add to calendar')
+                    }
+                    else
+                    {
+                        button.text('Remove from calendar')
+
+                    }
+    
+                }
+            })
+        } );
+    
+    
+    } );
+    
+</script>
+<script>
+  
+            // this required to ajax request it is common
+    $(function() {
+        // This function gets cookie with a given name
+       function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            cookieValue = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken'); //here get from html because HTTP_only
+        
+        /*
+        The functions below will create a header with csrftoken
+        */
+        
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        function sameOrigin(url) {
+            // test that a given url is a same-origin URL
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                // or any other URL that isn't scheme relative or absolute i.e relative.
+                !(/^(\/\/|http:|https:).*/.test(url));
+        }
+        
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                    // Send the token to same-origin, relative URLs only.
+                    // Send the token only if the method warrants CSRF protection
+                    // Using the CSRFToken value acquired earlier
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        
+        });
+</script>
+<!-- <script type="text/javascript">
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
     $('.likebutton').click(function () {
@@ -176,28 +263,9 @@
                 }
             })
     });
+</script> -->
 
-</script>
-<script>
-    
-    $(document).ready(function () {
-      $('#dtMaterialDesignExample').DataTable();
-      $('#dtMaterialDesignExample_wrapper').find('label').each(function () {
-        $(this).parent().append($(this).children());
-      });
-      $('#dtMaterialDesignExample_wrapper .dataTables_filter').find('input').each(function () {
-        const $this = $(this);
-        $this.attr("placeholder", "Search");
-        $this.removeClass('form-control-sm');
-      });
-      $('#dtMaterialDesignExample_wrapper .dataTables_length').addClass('d-flex flex-row');
-      $('#dtMaterialDesignExample_wrapper .dataTables_filter').addClass('md-form');
-      $('#dtMaterialDesignExample_wrapper select').removeClass(
-        'custom-select custom-select-sm form-control form-control-sm');
-      $('#dtMaterialDesignExample_wrapper select').addClass('mdb-select');
-      $('#dtMaterialDesignExample_wrapper .mdb-select').materialSelect();
-      $('#dtMaterialDesignExample_wrapper .dataTables_filter').find('label').remove();
-    });
 
-  </script>
+
+
 {% endblock inline_javascript %}

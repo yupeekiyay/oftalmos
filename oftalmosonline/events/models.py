@@ -15,7 +15,7 @@ class Category(models.Model):
                      ('optometry', 'Optometry'),
                      ('multi', 'Multidisciplinary'),
                      ('plastic', 'Plastic and Reconstructive surgery'),
-                     ('Ocular oncology', 'onco'),
+                     ('onco', 'Ocular oncology'),
                      ('glaucoma', 'Glaucoma'),
                      ('pediatrics', 'Pediatrics'), ]
     topic = models.CharField(max_length=100, choices=TOPIC_CHOICES)

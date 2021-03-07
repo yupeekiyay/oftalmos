@@ -1,5 +1,7 @@
 from django.db.models.query import QuerySet
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from django.views.generic.base import View
+from rest_framework.views import APIView
 from .models import Event
 from django.views import generic
 from django.urls import reverse
@@ -9,37 +11,20 @@ import datetime
 from .forms import EventModelForm
 from django.shortcuts import redirect
 from oftalmosonline.users.models import UserCalendar, User
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, response
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
 
 User = get_user_model()
 
 class LandingPageView(generic.TemplateView):
-    template_name = '../templates/pages/home.html'
+    template_name = '../templates/userevents.html'
 
     def dispatch(self,request,*args, **kwargs):
         if request.user.is_authenticated:
             return redirect("user_events")
         return super().dispatch(request,*args,**kwargs)
 
-    def get_context_data(self, **kwargs):
-        user = self.request.user
-        context = super(LandingPageView, self).get_context_data(**kwargs)
-        seven_days_ago=datetime.date.today()+datetime.timedelta(days=7)
-        next_in_seven=Event.objects.filter(event_date_start__gt=datetime.date.today(),event_date_start__lt=seven_days_ago).count()
-        live_events=Event.objects.filter(event_format='live').count()
-        online_events=Event.objects.filter(event_format='online').count()
-
-        total_events=Event.objects.all().count()
-        context.update({
-                  "next_in_seven":next_in_seven, 
-                  "live_events":live_events, 
- 
-                  "online_events":online_events, 
-                  "total_events":total_events        
-         })
-        
-        return context
 
 class EventListView(generic.ListView):
     template_name = "discover_events.html"
@@ -50,7 +35,7 @@ class EventListView(generic.ListView):
         context = super(EventListView, self).get_context_data(**kwargs)
         thirty_days_ago=datetime.date.today()+datetime.timedelta(days=7)
         next_in_thirty=Event.objects.filter(user=user, event_date_start__gt=datetime.date.today(),event_date_start__lt=thirty_days_ago)
-        past_events=Event.objects.filter(event_date_finish__lt=datetime.date.today())
+        past_events=Event.objects.filter(user=user, event_date_finish__lt=datetime.date.today())
         recently_added = Event.objects.filter(created=datetime.date.today()).count()
         context.update({
                   "next_in_thirty":next_in_thirty, 
@@ -78,7 +63,36 @@ class EventListView(generic.ListView):
         else:
             return HttpResponse("Request method is not a POST")
 
-    
+# class AddEventView(View):
+#     def Post (self,request) :
+#         print(self.request.data)
+#         return response({}) 
+from rest_framework import status
+class AddEventView(APIView):
+
+    def post(self,request):
+        #print(request.data)
+        try:
+            if ('action' and 'event_id' in request.data):
+                if( request.data['action'] in ['like','unlike']):
+                    action = request.data['action']
+                    user_events=request.user.usercalendar.events.all()
+                    event=get_object_or_404(Event,id=int(request.data['event_id']))
+                    
+                    if action =='like':
+                        request.user.usercalendar.events.add(event)
+                        return Response({'message':'event add to your calendar','Newaction':'unlike'},status=status.HTTP_201_CREATED)
+                    elif action == 'unlike':
+                        request.user.usercalendar.events.remove(event)
+                        return Response({'message':'event removed from your calendar','Newaction':'like'},status=status.HTTP_201_CREATED)
+                    #print('all events',user_events)
+                    
+                    return Response({'message':'bad request'},status=status.HTTP_400_BAD_REQUEST) 
+        except Exception as e:
+            print(e)
+        return Response({'message':'bad request'},status=status.HTTP_400_BAD_REQUEST)
+      
+
 class EventDetailView(generic.DetailView):
     template_name = "events/event.html"
     queryset = Event.objects.all()
