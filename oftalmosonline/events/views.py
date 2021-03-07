@@ -22,6 +22,24 @@ class LandingPageView(generic.TemplateView):
             return redirect("user_events")
         return super().dispatch(request,*args,**kwargs)
 
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        context = super(LandingPageView, self).get_context_data(**kwargs)
+        seven_days_ago=datetime.date.today()+datetime.timedelta(days=7)
+        next_in_seven=Event.objects.filter(event_date_start__gt=datetime.date.today(),event_date_start__lt=seven_days_ago).count()
+        live_events=Event.objects.filter(event_format='live').count()
+        online_events=Event.objects.filter(event_format='online').count()
+
+        total_events=Event.objects.all().count()
+        context.update({
+                  "next_in_seven":next_in_seven, 
+                  "live_events":live_events, 
+ 
+                  "online_events":online_events, 
+                  "total_events":total_events        
+         })
+        
+        return context
 
 class EventListView(generic.ListView):
     template_name = "discover_events.html"
